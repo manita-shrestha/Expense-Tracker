@@ -6,7 +6,14 @@ pipeline {
             args '-p 3000:3000'
         }
     }
-    stages {
+    stages 
+	stage('Checkout') {
+            steps {
+                // Checkout the GitHub repository
+                script {
+                    git branch: 'main', credentialsId: 'GitHub Credential', url: 'https://github.com/manita-shrestha/Expense-Tracker.git'
+                }
+            }
         stage('Build') {
             steps {
                 sh 'npm install'
