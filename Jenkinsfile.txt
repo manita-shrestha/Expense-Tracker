@@ -1,0 +1,60 @@
+pipeline {
+    agent any
+
+    environment {
+        // Define environment variables if needed
+        NODE_VERSION = '16'  // Specify the Node.js version you need
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                script {
+                    // Checkout the source code from GitLab
+                    checkout scm
+                }
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                script {
+                    // Install Node.js and project dependencies
+                    tool name: "NodeJS-${NODE_VERSION}", type: 'jenkins.plugins.nodejs.tools.NodeJSInstallation'
+                    sh 'npm install'
+                }
+            }
+        }
+
+        stage('Build') {
+            steps {
+                script {
+                    // Build the Next.js project
+                    sh 'npm run build'
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                script {
+                    // Copy the built files to your server or deploy using your preferred method
+                    // Example: Using SCP to copy files to a remote server
+                    // Make sure to configure Jenkins to have SSH keys for passwordless access
+                    sh 'scp -r ./out user@your-server:/path/to/destination'
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            // Additional steps to perform after a successful deployment
+            echo 'Deployment successful'
+        }
+        failure {
+            // Additional steps to perform if the deployment fails
+            echo 'Deployment failed'
+        }
+    }
+}
